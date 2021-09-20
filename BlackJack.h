@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 enum Suits {
     CLUBS,
@@ -89,6 +90,11 @@ public:
             sum += card->getValue();
         }
         return sum;
+    }
+
+    virtual ~Hand()
+    {
+        Clear();
     }
 };
 
@@ -187,21 +193,43 @@ public:
 
 //HW7_Task 3 =========================================================================================
 
-class Deck : public Hand
+class Deck : virtual public Hand
 {
 private:
 public:
     void Populate()
     {
+        Clear();
         for (int suitCount = CLUBS; suitCount <= SPADES; suitCount++)
         {
-            auto suit = static_cast<Suits>(suitCount);
             for (int rankCount = ACE; rankCount <= KING; rankCount++)
             {
-                
-                auto rank = static_cast<Ranks>(rankCount);
-                Card card = new Card(rank, suit);
+                Add(new Card(static_cast<Ranks>(rankCount), static_cast<Suits>(suitCount)));
             }
+        }
+    }
+
+    Deck()
+    {
+        Populate();
+    }
+
+    void Shuffle()
+    {
+        std::random_shuffle(hand.begin(), hand.end());
+    }
+
+    void Deal(Hand& aHand)
+    {
+        aHand.Add(hand.back());
+        hand.pop_back();
+    }
+
+    void AddltionalCards(GenericPlayer& aGenerlcPlayer)
+    {
+        while(aGenerlcPlayer.IsHitting())
+        {
+            Deal(aGenerlcPlayer.hand)
         }
     }
 };
