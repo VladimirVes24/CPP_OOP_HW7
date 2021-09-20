@@ -4,26 +4,30 @@
 #include <algorithm>
 
 enum Suits {
-    CLUBS,
-    DIAMONDS,
-    HEARTS,
-    SPADES
+    CLUBS = 0,
+    DIAMONDS = 1,
+    HEARTS = 2,
+    SPADES = 3
 };
 
 enum Ranks {
     ACE = 1,
-    TWO,
-    THREE,
-    FOUR,
-    FIVE,
-    SIX,
-    SEVEN,
-    EIGHT,
-    NINE,
-    TEN,
-    JACK,
-    QUEEN,
-    KING
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+    FIVE = 5,
+    SIX = 6,
+    SEVEN = 7,
+    EIGHT = 8,
+    NINE = 9,
+    TEN = 10,
+    JACK = 11,
+    QUEEN = 12,
+    KING = 13
+};
+
+enum Numbers {
+    DECKSIZE = 52
 };
 
 class Card
@@ -31,7 +35,7 @@ class Card
 protected:
     Suits suit = CLUBS;
     Ranks rank = ACE;
-    bool isFaceUp = false;
+    bool isFaceUp = true;
 public:
     Card() {}
     Card(Ranks inputRank, Suits inputSuit)
@@ -98,7 +102,7 @@ public:
     }
 };
 
-class GenericPlayer : public Hand
+class GenericPlayer : virtual public Hand
 {
 protected:
     std::string name;
@@ -199,7 +203,6 @@ private:
 public:
     void Populate()
     {
-        Clear();
         for (int suitCount = CLUBS; suitCount <= SPADES; suitCount++)
         {
             for (int rankCount = ACE; rankCount <= KING; rankCount++)
@@ -221,15 +224,51 @@ public:
 
     void Deal(Hand& aHand)
     {
-        aHand.Add(hand.back());
-        hand.pop_back();
+        if (!hand.empty())
+        {
+            aHand.Add(hand.back());
+            hand.pop_back();
+        }
+        else
+        {
+            std::cout << "No cards left!";
+        }
+
     }
 
-    void AddltionalCards(GenericPlayer& aGenerlcPlayer)
+    void AdditionalCards(GenericPlayer& aGenericPlayer)
     {
-        while(aGenerlcPlayer.IsHitting())
+        while(!aGenericPlayer.IsBoosted() && aGenericPlayer.IsHitting())
         {
-            Deal(aGenerlcPlayer.hand)
+            Deal(aGenericPlayer);
         }
+        if (aGenericPlayer.IsBoosted()) aGenericPlayer.Bust();
     }
+};
+
+class Game
+{
+private:
+    Deck gameDeck;
+    House dealerHand;
+    std::vector<Player*> players;
+public:
+    Game(std::vector<std::string> playerNames)
+    {
+        players.clear();
+        players.resize(playerNames.size());
+        std::vector<std::string>::const_iterator namesIterator = playerNames.begin();
+        while (namesIterator != playerNames.end())
+        {
+            players.push_back(new Player(*namesIterator));
+        }
+        gameDeck.Shuffle();
+    }
+
+    void Play()
+    {
+
+    }
+
+
 };
